@@ -1,7 +1,9 @@
 var path = require('path');
+var fs = require('fs-extra');
 var should = require('should');
 
 var manager = require('../lib');
+var config = require('../lib/config');
 
 describe('Versions', function() {
     this.timeout(100000);
@@ -40,6 +42,11 @@ describe('Versions', function() {
         it('should correctly return the installed version', function() {
             result.should.be.a.String();
             result.should.equal('2.0.0');
+        });
+
+        it('should install dependencies inside the version folder', function() {
+            var versionFolder = path.resolve(config.VERSIONS_ROOT, '2.0.0');
+            fs.existsSync(path.resolve(versionFolder, 'node_modules')).should.be.true();
         });
     });
 
@@ -88,10 +95,11 @@ describe('Versions', function() {
         it('should correctly list latest version', function() {
             var result = manager.versions();
             result.should.have.lengthOf(3);
-            result[1].should.have.properties('version', 'path');
-            result[1].tag.should.equal('beta');
-            result[1].name.should.equal('latest');
-            result[1].link.should.equal(localGitbook);
+            result[0].should.have.properties('version', 'path');
+            result[0].version.should.equal('3.2.3');
+            result[0].tag.should.equal('latest');
+            result[0].name.should.equal('latest');
+            result[0].link.should.equal(localGitbook);
         });
 
         it('should correctly return latest version as default one', function() {
